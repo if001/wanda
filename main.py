@@ -16,6 +16,7 @@ print('# of gpus: ', torch.cuda.device_count())
 def get_llm(model, cache_dir="llm_weights"):
     model = AutoModelForCausalLM.from_pretrained(
         model, 
+        load_in_load_in_4bit=True,
         torch_dtype=torch.float16, 
         cache_dir=cache_dir, 
         low_cpu_mem_usage=True, 
