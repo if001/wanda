@@ -49,8 +49,10 @@ def check_sparsity(model):
 
             sub_count += (W==0).sum().item()
             sub_params += W.numel()
-
-        print(f"layer {i} sparsity {float(sub_count)/sub_params:.6f}")
+        if sub_params == 0:
+            print('params is zero...', sub_count)
+        else:
+            print(f"layer {i} sparsity {float(sub_count)/sub_params:.6f}")
 
     model.config.use_cache = use_cache 
     return float(count)/total_params 

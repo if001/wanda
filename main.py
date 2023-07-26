@@ -89,6 +89,7 @@ def main():
     if args.save_model:
         model.save_pretrained(args.save_model)
         tokenizer.save_pretrained(args.save_model)
+        print('save...', args.save_model)
 
 if __name__ == '__main__':
     main()
