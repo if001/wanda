@@ -1,4 +1,4 @@
-# Pruning by Weights and Activations
+# Pruning LLMs by Weights and Activations
 Official PyTorch implementation of **Wanda** (Pruning by **W**eights **and a**ctivations), as presented in our paper:
 
 [A Simple and Effective Pruning Approach for Large Language Models](https://arxiv.org/abs/2306.11695).  
@@ -30,7 +30,7 @@ python main.py \
     --save out/llama_7b/unstructured/wanda/ 
 ```
 We provide a quick overview of the arguments:  
-- `--model`: The identifier for the LLaMA model on the HuggingFace model hub.
+- `--model`: The identifier for the LLaMA model on the Hugging Face model hub.
 - `--cache_dir`: Directory for loading or storing LLM weights. The default is `llm_weights`.
 - `--prune_method`: We have implemented three pruning methods, namely [`magnitude`, `wanda`, `sparsegpt`].
 - `--sparsity_ratio`: Denotes the percentage of weights to be pruned.
