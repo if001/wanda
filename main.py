@@ -2,7 +2,7 @@ import argparse
 import os 
 import numpy as np
 import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from importlib.metadata import version
 
 from lib.prune import prune_wanda, prune_magnitude, prune_sparsegpt, check_sparsity, find_layers
@@ -14,10 +14,17 @@ print('accelerate', version('accelerate'))
 print('# of gpus: ', torch.cuda.device_count())
 
 def get_llm(model, cache_dir="llm_weights"):
+    quantization_config = BitsAndBytesConfig(
+        load_in_4bit=True,
+        bnb_4bit_use_double_quant=True,
+        bnb_4bit_quant_type="nf4",
+        bnb_4bit_compute_dtype=torch.bfloat16
+        )
     model = AutoModelForCausalLM.from_pretrained(
         model, 
-        load_in_4bit=True,
-        torch_dtype=torch.float16, 
+        # load_in_4bit=True,
+        quantization_config=quantization_config,
+        torch_dtype=torch.float16,
         cache_dir=cache_dir, 
         low_cpu_mem_usage=True, 
         device_map="auto"
