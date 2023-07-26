@@ -54,7 +54,10 @@ def check_sparsity(model):
         else:
             print(f"layer {i} sparsity {float(sub_count)/sub_params:.6f}")
 
-    model.config.use_cache = use_cache 
+    model.config.use_cache = use_cache
+    if total_params == 0:
+        print('total params zero....')
+        return 0    
     return float(count)/total_params 
 
 def prepare_calibration_input(model, dataloader, device):
