@@ -38,6 +38,7 @@ def check_sparsity(model):
     total_params = 0
     for i in range(len(layers)):
         layer = layers[i]
+        print(layer)
         subset = find_layers(layer)
 
         sub_count = 0
@@ -49,8 +50,8 @@ def check_sparsity(model):
 
             sub_count += (W==0).sum().item()
             sub_params += W.numel()
-        if sub_params == 0:
-            print('params is zero...', sub_count)
+        if sub_params == 0:            
+            print('params is zero...', sub_count)            
         else:
             print(f"layer {i} sparsity {float(sub_count)/sub_params:.6f}")
 
