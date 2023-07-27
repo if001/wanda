@@ -12,7 +12,7 @@ class Prompter(object):
         if not template_name:
             # Enforce the default here, so the constructor can be called with '' and will not break.
             template_name = "alpaca"
-        file_name = osp.join("templates", f"{template_name}.json")
+        file_name = osp.join("../templates", f"{template_name}.json")
         if not osp.exists(file_name):
             raise ValueError(f"Can't read {file_name}")
         with open(file_name) as fp:
@@ -56,8 +56,8 @@ def get_jp_loarder(template_name, data_path, tokenizer, val_set_size):
             data_point["input"],
             data_point["output"],
         )
-        print(full_prompt)
-        data = tokenizer(full_prompt, return_tensor='pt')
+        print('full_prompt: ', full_prompt)
+        data = tokenizer(full_prompt, return_tensors='pt')
         inp = data.input_ids
         tar = inp.clone()
         tar[:, :-1] = -100
