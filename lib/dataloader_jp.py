@@ -81,4 +81,4 @@ def get_jp_loarder(template_name, data_path, tokenizer, val_set_size, seq_len):
     for v in train_val["test"].shuffle():
         d = generate_and_tokenize_prompt(v)
         val_enc.append(d)
-    return trainloader, val_enc
+    return trainloader[:128], val_enc[:128]
