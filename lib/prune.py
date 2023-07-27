@@ -137,7 +137,7 @@ def prune_wanda(args, model, tokenizer, device=torch.device("cuda:0"), prune_n=0
 
     print("loading calibdation data")
     # dataloader, _ = get_loaders("c4",nsamples=args.nsamples,seed=args.seed,seqlen=2048,tokenizer=tokenizer)
-    dataloader, _ = get_jp_loarder("alpaca_ja", "./alpaca_data_ja.json", tokenizer, 10)
+    dataloader, _ = get_jp_loarder("alpaca_ja", "./alpaca_data_ja.json", tokenizer, 10, seq_len=2048)
     print("dataset loading complete")
     with torch.no_grad():
         inps, outs, attention_mask, position_ids = prepare_calibration_input(model, dataloader, device)

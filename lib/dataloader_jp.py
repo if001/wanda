@@ -47,7 +47,7 @@ class Prompter(object):
     def get_response(self, output: str) -> str:
         return output.split(self.template["response_split"])[1].strip()
     
-def get_jp_loarder(template_name, data_path, tokenizer, val_set_size):
+def get_jp_loarder(template_name, data_path, tokenizer, val_set_size, seq_len):
     prompter = Prompter(template_name)
 
     def generate_and_tokenize_prompt(data_point):
@@ -57,7 +57,7 @@ def get_jp_loarder(template_name, data_path, tokenizer, val_set_size):
             data_point["output"],
         )
         print('full_prompt: ', full_prompt)
-        data = tokenizer(full_prompt, return_tensors='pt')
+        data = tokenizer(full_prompt, return_tensors='pt', padding=True, truncation=True, max_length=seq_len)
         inp = data.input_ids
         tar = inp.clone()
         tar[:, :-1] = -100
