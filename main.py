@@ -15,16 +15,17 @@ print('transformers', version('transformers'))
 print('accelerate', version('accelerate'))
 print('# of gpus: ', torch.cuda.device_count())
 
-def get_llm(model, cache_dir="llm_weights"):
+def get_llm(model, cache_dir="llm_weights", load8bit=False):
     quantization_config = BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_use_double_quant=True,
         bnb_4bit_quant_type="nf4",
         bnb_4bit_compute_dtype=torch.bfloat16
         )
+    print('load 8 bit...', load8bit)
     model = AutoModelForCausalLM.from_pretrained(
         model, 
-        load_in_8bit=True,
+        load_in_8bit=load8bit,
         # quantization_config=quantization_config,
         torch_dtype=torch.float16,
         cache_dir=cache_dir, 
@@ -47,6 +48,7 @@ def main():
     parser.add_argument('--use_variant', action="store_true", help="whether to use the wanda variant described in the appendix")
     parser.add_argument('--save', type=str, default=None, help='Path to save results.')
     parser.add_argument('--save_model', type=str, default=None, help='Path to save the pruned model.')
+    parser.add_argument('--load8bit', action="store_true", help="whether to use the wanda variant described in the appendix")
     args = parser.parse_args()
 
     # Setting seeds for reproducibility
@@ -61,7 +63,7 @@ def main():
 
     model_name = args.model.split("/")[-1]
     print(f"loading llm model {args.model}")
-    model = get_llm(args.model, args.cache_dir)
+    model = get_llm(args.model, args.cache_dir, args.load8bit)
     model.eval()
     tokenizer = AutoTokenizer.from_pretrained(args.model, use_fast=False)
     tokenizer.pad_token_id = tokenizer.unk_token_id ## for llama2
@@ -74,7 +76,7 @@ def main():
     if args.sparsity_ratio != 0:
         print("pruning starts")
         if args.prune_method == "wanda":
-            prune_wanda(args, model, tokenizer, device, prune_n=prune_n, prune_m=prune_m)
+            prune_wanda(args, model, tokenizer, device, prune_n=prune_n, prune_m=prune_m, load8bit=args.load8bit)
         elif args.prune_method == "magnitude":
             prune_magnitude(args, model, tokenizer, device, prune_n=prune_n, prune_m=prune_m)
         elif args.prune_method == "sparsegpt":
@@ -82,8 +84,11 @@ def main():
 
     ################################################################
     print("*"*30)
-    # sparsity_ratio = check_sparsity(model)
-    sparsity_ratio = check_sparsity_for_8bit(model)
+    if args.load8bit:
+        print('8bit...')
+        sparsity_ratio = check_sparsity_for_8bit(model)
+    else:
+        sparsity_ratio = check_sparsity(model)    
     print(f"sparsity sanity check {sparsity_ratio:.4f}")
     print("*"*30)
     ################################################################

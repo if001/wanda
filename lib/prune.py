@@ -133,7 +133,7 @@ def prune_magnitude(args, model, tokenizer, device=torch.device("cuda:0"), prune
 
             W[W_mask] = 0
 
-def prune_wanda(args, model, tokenizer, device=torch.device("cuda:0"), prune_n=0, prune_m=0):
+def prune_wanda(args, model, tokenizer, device=torch.device("cuda:0"), prune_n=0, prune_m=0, load8bit=False):
     use_cache = model.config.use_cache 
     model.config.use_cache = False     
 
@@ -147,8 +147,10 @@ def prune_wanda(args, model, tokenizer, device=torch.device("cuda:0"), prune_n=0
     layers = model.model.layers
     for i in range(len(layers)):
         layer = layers[i]
-        # subset = find_layers(layer)
-        subset = find_layers_for_8bit(layer)
+        if load8bit:
+            subset = find_layers_for_8bit(layer)
+        else:
+            subset = find_layers(layer)
 
         if f"model.layers.{i}" in model.hf_device_map:   ## handle the case for llama-30B and llama-65B, when the device map has multiple GPUs;
             dev = model.hf_device_map[f"model.layers.{i}"]
