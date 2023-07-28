@@ -7,6 +7,8 @@ from .layerwrapper import WrappedGPT
 from .data import get_loaders 
 from .dataloader_jp import get_jp_loarder
 
+from .lib_8bit import find_layers_for_8bit
+
 from pdb import set_trace as st 
 
 def find_layers(module, layers=[nn.Linear], name=''):
@@ -52,7 +54,7 @@ def check_sparsity(model):
             sub_count += (W==0).sum().item()
             sub_params += W.numel()
         if sub_params == 0:            
-            print('params is zero...', sub_count)            
+            print('params is zero...', sub_count, sub_params)
         else:
             print(f"layer {i} sparsity {float(sub_count)/sub_params:.6f}")
 
@@ -145,7 +147,8 @@ def prune_wanda(args, model, tokenizer, device=torch.device("cuda:0"), prune_n=0
     layers = model.model.layers
     for i in range(len(layers)):
         layer = layers[i]
-        subset = find_layers(layer)
+        # subset = find_layers(layer)
+        subset = find_layers_for_8bit(layer)
 
         if f"model.layers.{i}" in model.hf_device_map:   ## handle the case for llama-30B and llama-65B, when the device map has multiple GPUs;
             dev = model.hf_device_map[f"model.layers.{i}"]

@@ -7,6 +7,8 @@ from importlib.metadata import version
 
 from lib.prune import prune_wanda, prune_magnitude, prune_sparsegpt, check_sparsity, find_layers
 from lib.eval import eval_ppl
+from lib.lib_8bit import check_sparsity_for_8bit
+
 
 print('torch', version('torch'))
 print('transformers', version('transformers'))
@@ -80,7 +82,8 @@ def main():
 
     ################################################################
     print("*"*30)
-    sparsity_ratio = check_sparsity(model)
+    # sparsity_ratio = check_sparsity(model)
+    sparsity_ratio = check_sparsity_for_8bit(model)
     print(f"sparsity sanity check {sparsity_ratio:.4f}")
     print("*"*30)
     ################################################################
